@@ -48,8 +48,8 @@ class PreencherEnderecoPorCepStrategyTest {
         assertNull(resultado);
         assertEquals("Praça da Sé", hospede.getEndereco().getLogradouro());
         assertEquals("Sé", hospede.getEndereco().getBairro());
-        assertEquals("São Paulo", hospede.getEndereco().getCidade().getNome());
-        assertEquals("SP", hospede.getEndereco().getCidade().getEstado().getUf());
+        assertEquals("São Paulo", hospede.getEndereco().getCidade());
+        assertEquals("SP", hospede.getEndereco().getEstado());
     }
 
     @Test

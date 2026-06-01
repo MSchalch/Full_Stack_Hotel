@@ -4,9 +4,11 @@ import br.com.hotel.domain.EntidadeDominio;
 import br.com.hotel.domain.Reserva;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+@Repository
 public class ReservaDAO implements IDAO {
 
     private EntityManager entityManager;

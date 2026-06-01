@@ -1,14 +1,10 @@
 package br.com.hotel.strategy;
 
-import br.com.hotel.domain.Cidade;
 import br.com.hotel.domain.Endereco;
 import br.com.hotel.domain.EntidadeDominio;
-import br.com.hotel.domain.Estado;
 import br.com.hotel.domain.Hospede;
 import br.com.hotel.domain.dto.ViaCepDTO;
 import br.com.hotel.service.ViaCepService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 public class PreencherEnderecoPorCepStrategy implements IStrategy {
 
@@ -35,22 +31,14 @@ public class PreencherEnderecoPorCepStrategy implements IStrategy {
                         endereco.setLogradouro(dto.getLogradouro());
                         endereco.setBairro(dto.getBairro());
                         
-                        // Atualiza a cidade e estado se necessário (opcional, dependendo de como as tabelas são tratadas)
-                        if (endereco.getCidade() == null) {
-                            Cidade cidade = new Cidade();
-                            cidade.setNome(dto.getLocalidade());
-                            
-                            Estado estado = new Estado();
-                            estado.setUf(dto.getUf());
-                            estado.setNome(dto.getUf()); // simplificação para pegar a UF como nome
-                            
-                            cidade.setEstado(estado);
-                            endereco.setCidade(cidade);
+                        if (endereco.getCidade() == null || endereco.getCidade().trim().isEmpty()) {
+                            endereco.setCidade(dto.getLocalidade());
+                            endereco.setEstado(dto.getUf());
                         }
                     }
                 }
             }
         }
-        return null; // Sempre retorna null pois essa strategy não barra o fluxo, apenas tenta preencher.
+        return null;
     }
 }

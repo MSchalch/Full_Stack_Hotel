@@ -1,11 +1,7 @@
 package br.com.hotel.strategy;
 
-import br.com.hotel.domain.Cidade;
 import br.com.hotel.domain.Endereco;
-import br.com.hotel.domain.Estado;
-import br.com.hotel.domain.Email;
 import br.com.hotel.domain.Hospede;
-import br.com.hotel.domain.Telefone;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -31,23 +27,16 @@ class ValidarDadosObrigatoriosHospedeStrategyTest {
         hospede.setCpf("12345678901");
         hospede.setDataNascimento(LocalDate.of(1990, 1, 1));
         
-        Telefone tel = new Telefone();
-        tel.setDescricao("11999999999");
-        hospede.setTelefone(tel);
-
-        Email email = new Email();
-        email.setDescricao("joao@email.com");
-        hospede.setEmail(email);
+        hospede.setTelefone("11999999999");
+        hospede.setEmail("joao@email.com");
         
         Endereco end = new Endereco();
         end.setLogradouro("Rua A");
         end.setNumero("123");
         end.setCep("01001000");
         end.setBairro("Centro");
-        Cidade cidade = new Cidade();
-        Estado estado = new Estado();
-        cidade.setEstado(estado);
-        end.setCidade(cidade);
+        end.setCidade("São Paulo");
+        end.setEstado("SP");
         hospede.setEndereco(end);
 
         String resultado = strategy.processar(hospede);
@@ -70,7 +59,6 @@ class ValidarDadosObrigatoriosHospedeStrategyTest {
         hospede.setCpf("12345678901");
         hospede.setDataNascimento(LocalDate.of(1990, 1, 1));
         
-        // Sem setar telefone
         assertEquals("Telefone é obrigatório.", strategy.processar(hospede));
     }
 }

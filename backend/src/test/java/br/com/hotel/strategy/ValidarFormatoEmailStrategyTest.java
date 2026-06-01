@@ -1,6 +1,5 @@
 package br.com.hotel.strategy;
 
-import br.com.hotel.domain.Email;
 import br.com.hotel.domain.Hospede;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,9 +20,7 @@ class ValidarFormatoEmailStrategyTest {
 
     @Test
     void processar_ComEmailValido_DeveRetornarNull() {
-        Email email = new Email();
-        email.setDescricao("teste@hotel.com.br");
-        hospede.setEmail(email);
+        hospede.setEmail("teste@hotel.com.br");
 
         String resultado = strategy.processar(hospede);
 
@@ -32,9 +29,7 @@ class ValidarFormatoEmailStrategyTest {
 
     @Test
     void processar_ComEmailInvalido_DeveRetornarErro() {
-        Email email = new Email();
-        email.setDescricao("teste.com.br"); // Sem @
-        hospede.setEmail(email);
+        hospede.setEmail("teste.com.br"); // Sem @
 
         String resultado = strategy.processar(hospede);
 
@@ -43,7 +38,6 @@ class ValidarFormatoEmailStrategyTest {
 
     @Test
     void processar_ComEmailNulo_DeveIgnorarRetornandoNull() {
-        // Se for nulo, a validação de obrigatoriedade pegará (em outra strategy), esta só valida formato
         hospede.setEmail(null);
 
         String resultado = strategy.processar(hospede);

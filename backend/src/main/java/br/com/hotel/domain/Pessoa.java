@@ -12,17 +12,12 @@ import java.time.LocalDate;
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public abstract class Pessoa extends EntidadeDominio {
     private String nomeCompleto;
-    private String cpf; // String conforme solicitado, tratado por strategy
+    private String cpf; 
     private LocalDate dataNascimento;
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "telefone_id")
-    private Telefone telefone;
+    
+    private String telefone;
+    private String email;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "email_id")
-    private Email email;
-
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "endereco_id")
+    @Embedded
     private Endereco endereco;
 }
