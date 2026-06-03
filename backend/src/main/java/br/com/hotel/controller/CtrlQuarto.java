@@ -43,7 +43,15 @@ public class CtrlQuarto {
     }
 
     @GetMapping
-    public ResponseEntity<?> consultar() {
-        return ResponseEntity.ok(fachada.consultar(new Quarto()));
+    public ResponseEntity<?> consultar(@RequestParam(required = false) String termo) {
+        Quarto quarto = new Quarto();
+        if (termo != null && !termo.trim().isEmpty()) {
+            try {
+                quarto.setNumero(Integer.parseInt(termo));
+            } catch (NumberFormatException e) {
+                // Ignorar se não for número
+            }
+        }
+        return ResponseEntity.ok(fachada.consultar(quarto));
     }
 }

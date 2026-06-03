@@ -43,7 +43,11 @@ public class CtrlHospede {
     }
 
     @GetMapping
-    public ResponseEntity<?> consultar() {
-        return ResponseEntity.ok(fachada.consultar(new Hospede()));
+    public ResponseEntity<?> consultar(@RequestParam(required = false) String termo) {
+        Hospede hospedeFiltro = new Hospede();
+        if (termo != null && !termo.trim().isEmpty()) {
+            hospedeFiltro.setNomeCompleto(termo);
+        }
+        return ResponseEntity.ok(fachada.consultar(hospedeFiltro));
     }
 }

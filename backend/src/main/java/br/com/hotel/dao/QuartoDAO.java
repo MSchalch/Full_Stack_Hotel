@@ -33,18 +33,29 @@ public class QuartoDAO implements IDAO {
 
     @Override
     public void deletar(EntidadeDominio entidade) {
-        if (entidade instanceof Quarto quarto) {
-            // Em vez de deletar fisicamente, na maioria dos casos inativamos
-            quarto.setAtivo(false);
-            entityManager.merge(quarto);
+        if (entidade instanceof Quarto quarto && quarto.getId() != null) {
+            Quarto qDB = entityManager.find(Quarto.class, quarto.getId());
+            if (qDB != null) {
+                entityManager.remove(qDB);
+            }
         }
     }
 
     @Override
     public List<EntidadeDominio> consultar(EntidadeDominio entidade) {
-        // Implementação simplificada buscando todos ativos
-        String jpql = "SELECT q FROM Quarto q WHERE q.ativo = true";
-        TypedQuery<Quarto> query = entityManager.createQuery(jpql, Quarto.class);
-        return (List<EntidadeDominio>) (List<?>) query.getResultList();
+        if (entidade instanceof Quarto q) {
+            StringBuilder jpql = new StringBuilder("SELECT q FROM Quarto q WHERE 1=1");
+            if (q.getNumero() != null) {
+                jpql.append(" AND CAST(q.numero AS string) LIKE :numero");
+            }
+            jpql.append(" ORDER BY q.numero");
+            
+            var query = entityManager.createQuery(jpql.toString(), Quarto.class);
+            if (q.getNumero() != null) {
+                query.setParameter("numero", "%" + q.getNumero() + "%");
+            }
+            return (List<EntidadeDominio>) (List<?>) query.getResultList();
+        }
+        return List.of();
     }
 }

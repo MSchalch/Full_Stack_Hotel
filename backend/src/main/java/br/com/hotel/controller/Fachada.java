@@ -48,20 +48,51 @@ public class Fachada implements IFacade {
         rnsSalvarHospede.add(new ValidarFormatoEmailStrategy());
         rnsSalvarHospede.add(new VerificarCPFStrategy());
         rnsSalvarHospede.add(new ValidarCpfUnicoStrategy(entityManager));
+        rnsSalvarHospede.add(new ValidarMenorDeIdadeStrategy(entityManager));
 
         List<IStrategy> rnsAlterarHospede = new ArrayList<>();
         rnsAlterarHospede.add(new PreencherEnderecoPorCepStrategy(viaCepService));
         rnsAlterarHospede.add(new ValidarDadosObrigatoriosHospedeStrategy());
         rnsAlterarHospede.add(new ValidarFormatoEmailStrategy());
         rnsAlterarHospede.add(new VerificarCPFStrategy());
+        rnsAlterarHospede.add(new ValidarCpfUnicoStrategy(entityManager));
+        rnsAlterarHospede.add(new ValidarMenorDeIdadeStrategy(entityManager));
 
         Map<String, List<IStrategy>> rnsHospede = new HashMap<>();
         rnsHospede.put("SALVAR", rnsSalvarHospede);
         rnsHospede.put("ALTERAR", rnsAlterarHospede);
-        rnsHospede.put("EXCLUIR", new ArrayList<>()); // vazio por enquanto
+        
+        List<IStrategy> rnsExcluirHospede = new ArrayList<>();
+        rnsExcluirHospede.add(new ValidarExclusaoHospedeResponsavelStrategy(entityManager));
+        rnsHospede.put("EXCLUIR", rnsExcluirHospede);
+        
         rnsHospede.put("CONSULTAR", new ArrayList<>()); // vazio por enquanto
 
         rns.put(Hospede.class.getName(), rnsHospede);
+        
+        // 3. Instanciando Strategies de Quarto
+        List<IStrategy> rnsSalvarQuarto = new ArrayList<>();
+        rnsSalvarQuarto.add(new ValidarDadosObrigatoriosQuartoStrategy());
+        rnsSalvarQuarto.add(new ValidarValoresPositivosQuartoStrategy());
+        rnsSalvarQuarto.add(new ValidarCapacidadeQuartosPadraoStrategy());
+        rnsSalvarQuarto.add(new ValidarNumeroQuartoUnicoStrategy(entityManager));
+
+        List<IStrategy> rnsAlterarQuarto = new ArrayList<>();
+        rnsAlterarQuarto.add(new ValidarDadosObrigatoriosQuartoStrategy());
+        rnsAlterarQuarto.add(new ValidarValoresPositivosQuartoStrategy());
+        rnsAlterarQuarto.add(new ValidarCapacidadeQuartosPadraoStrategy());
+        rnsAlterarQuarto.add(new ValidarNumeroQuartoUnicoStrategy(entityManager));
+
+        List<IStrategy> rnsExcluirQuarto = new ArrayList<>();
+        rnsExcluirQuarto.add(new ValidarExclusaoQuartoStrategy(entityManager));
+
+        Map<String, List<IStrategy>> rnsQuarto = new HashMap<>();
+        rnsQuarto.put("SALVAR", rnsSalvarQuarto);
+        rnsQuarto.put("ALTERAR", rnsAlterarQuarto);
+        rnsQuarto.put("EXCLUIR", rnsExcluirQuarto);
+        rnsQuarto.put("CONSULTAR", new ArrayList<>());
+
+        rns.put(Quarto.class.getName(), rnsQuarto);
         
         // 4. Instanciando Strategies de Reserva
         List<IStrategy> rnsSalvarReserva = new ArrayList<>();

@@ -13,6 +13,9 @@
   --color-text-muted: #d9b8ad;
   --color-border: #3d0c02;
   
+  --color-danger: #ef4444;
+  --color-success: #10b981;
+  
   --radius-custom: 0 20px 0 20px;
   --radius-custom-small: 0 10px 0 10px;
   

@@ -48,19 +48,15 @@ public class HospedeDAO implements IDAO {
             StringBuilder jpql = new StringBuilder("SELECT h FROM Hospede h WHERE 1=1 ");
             
             if (hospedeFiltro.getNomeCompleto() != null && !hospedeFiltro.getNomeCompleto().trim().isEmpty()) {
-                jpql.append("AND LOWER(h.nomeCompleto) LIKE LOWER(CONCAT('%', :nome, '%')) ");
-            }
-            if (hospedeFiltro.getCpf() != null && !hospedeFiltro.getCpf().trim().isEmpty()) {
-                jpql.append("AND h.cpf = :cpf ");
+                jpql.append("AND (LOWER(h.nomeCompleto) LIKE LOWER(CONCAT('%', :termo, '%')) ");
+                jpql.append("OR h.cpf LIKE CONCAT('%', :termo, '%') ");
+                jpql.append("OR LOWER(h.email) LIKE LOWER(CONCAT('%', :termo, '%'))) ");
             }
 
             TypedQuery<Hospede> query = entityManager.createQuery(jpql.toString(), Hospede.class);
 
             if (hospedeFiltro.getNomeCompleto() != null && !hospedeFiltro.getNomeCompleto().trim().isEmpty()) {
-                query.setParameter("nome", hospedeFiltro.getNomeCompleto());
-            }
-            if (hospedeFiltro.getCpf() != null && !hospedeFiltro.getCpf().trim().isEmpty()) {
-                query.setParameter("cpf", hospedeFiltro.getCpf());
+                query.setParameter("termo", hospedeFiltro.getNomeCompleto());
             }
 
             return (List<EntidadeDominio>) (List<?>) query.getResultList();
