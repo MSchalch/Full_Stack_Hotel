@@ -24,7 +24,15 @@ public class Reserva extends EntidadeDominio {
 
     @ManyToOne
     @JoinColumn(name = "hospede_id")
-    private Hospede hospede;
+    private Hospede hospede; // O Titular da Reserva
+
+    @ManyToMany
+    @JoinTable(
+        name = "reserva_acompanhante",
+        joinColumns = @JoinColumn(name = "reserva_id"),
+        inverseJoinColumns = @JoinColumn(name = "hospede_id")
+    )
+    private java.util.List<Hospede> acompanhantes = new java.util.ArrayList<>();
 
     @Enumerated(EnumType.STRING)
     private StatusReserva status;

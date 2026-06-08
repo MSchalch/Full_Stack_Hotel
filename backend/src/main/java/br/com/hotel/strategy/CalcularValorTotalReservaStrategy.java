@@ -2,44 +2,48 @@ package br.com.hotel.strategy;
 
 import br.com.hotel.domain.EntidadeDominio;
 import br.com.hotel.domain.Reserva;
-import org.springframework.stereotype.Component;
-
+import br.com.hotel.domain.Quarto;
+import br.com.hotel.domain.Promocao;
+import jakarta.persistence.EntityManager;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.temporal.ChronoUnit;
 
 public class CalcularValorTotalReservaStrategy implements IStrategy {
+    private EntityManager entityManager;
+
+    public CalcularValorTotalReservaStrategy(EntityManager entityManager) {
+        this.entityManager = entityManager;
+    }
 
     @Override
     public String processar(EntidadeDominio entidade) {
-        if (entidade instanceof Reserva reserva) {
+        if (entidade instanceof Reserva reserva && reserva.getCheckIn() != null && reserva.getCheckOut() != null && reserva.getQuarto() != null) {
+            long diarias = ChronoUnit.DAYS.between(reserva.getCheckIn().toLocalDate(), reserva.getCheckOut().toLocalDate());
             
-            // Verifica se possui quarto, precoBase, checkin e checkout
-            if (reserva.getQuarto() == null || reserva.getQuarto().getPrecoBase() == null || 
-                reserva.getCheckIn() == null || reserva.getCheckOut() == null) {
-                return null; // Caso não tenha dados para cálculo, a validação de dados obrigatórios barrará
+            if (diarias < 1) {
+                diarias = 1; // Mínimo de 1 diária
             }
 
-            long dias = ChronoUnit.DAYS.between(reserva.getCheckIn().toLocalDate(), reserva.getCheckOut().toLocalDate());
-            if (dias <= 0) {
-                dias = 1; // Mínimo de 1 diária
-            }
+            Quarto quarto = entityManager.find(Quarto.class, reserva.getQuarto().getId());
+            if (quarto == null) return "Quarto não encontrado para calcular valor.";
 
-            BigDecimal valorTotal = reserva.getQuarto().getPrecoBase().multiply(new BigDecimal(dias));
+            BigDecimal precoBase = quarto.getPrecoBase();
+            BigDecimal valorTotal = precoBase.multiply(BigDecimal.valueOf(diarias));
 
-            if (reserva.getPromocao() != null) {
-                if (reserva.getPromocao().getPorcentagem() != null && reserva.getPromocao().getPorcentagem() > 0) {
-                    BigDecimal percentual = BigDecimal.valueOf(reserva.getPromocao().getPorcentagem()).divide(BigDecimal.valueOf(100), 4, RoundingMode.HALF_UP);
-                    BigDecimal desconto = valorTotal.multiply(percentual);
-                    valorTotal = valorTotal.subtract(desconto);
-                }
-                
-                if (reserva.getPromocao().getValorDesconto() != null && reserva.getPromocao().getValorDesconto().compareTo(BigDecimal.ZERO) > 0) {
-                    valorTotal = valorTotal.subtract(reserva.getPromocao().getValorDesconto());
+            // Aplicação da Promoção
+            if (reserva.getPromocao() != null && reserva.getPromocao().getId() != null) {
+                Promocao promocao = entityManager.find(Promocao.class, reserva.getPromocao().getId());
+                if (promocao != null && promocao.getAtivo()) {
+                    if (promocao.getPorcentagem() != null && promocao.getPorcentagem() > 0) {
+                        BigDecimal desconto = valorTotal.multiply(BigDecimal.valueOf(promocao.getPorcentagem() / 100.0));
+                        valorTotal = valorTotal.subtract(desconto);
+                    } else if (promocao.getValorDesconto() != null && promocao.getValorDesconto().compareTo(BigDecimal.ZERO) > 0) {
+                        valorTotal = valorTotal.subtract(promocao.getValorDesconto());
+                    }
                 }
             }
-
-            // Impede valor total negativo se o desconto for maior que o total
+            
             if (valorTotal.compareTo(BigDecimal.ZERO) < 0) {
                 valorTotal = BigDecimal.ZERO;
             }

@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/promocoes")
-@CrossOrigin(origins = "*")
 public class CtrlPromocao {
 
     @Autowired
@@ -40,7 +39,7 @@ public class CtrlPromocao {
         if (erro != null) {
             return ResponseEntity.badRequest().body(erro);
         }
-        return ResponseEntity.ok("Promoção inativada com sucesso!");
+        return ResponseEntity.ok("Promoção excluída com sucesso!");
     }
 
     @GetMapping

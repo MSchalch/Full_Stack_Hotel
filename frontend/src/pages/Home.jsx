@@ -1,14 +1,17 @@
 import React from 'react';
 import { Users, BedDouble, CalendarCheck, TrendingUp } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import './Home.css';
 
 const Home = () => {
+  const { t } = useTranslation();
+
   return (
     <div className="page-container">
       <div className="page-header">
         <div>
-          <h1>Dashboard Geral</h1>
-          <p>Bem-vindo ao painel do Hotel do Casarão</p>
+          <h1>{t('home.title')}</h1>
+          <p>{t('home.subtitle')}</p>
         </div>
       </div>
 
@@ -17,28 +20,28 @@ const Home = () => {
           <div className="stat-icon"><Users size={24} /></div>
           <div className="stat-info">
             <h3>124</h3>
-            <p>Hóspedes Ativos</p>
+            <p>{t('home.active_guests')}</p>
           </div>
         </div>
         <div className="stat-card">
           <div className="stat-icon"><BedDouble size={24} /></div>
           <div className="stat-info">
             <h3>15</h3>
-            <p>Quartos Livres</p>
+            <p>{t('home.free_rooms')}</p>
           </div>
         </div>
         <div className="stat-card">
           <div className="stat-icon"><CalendarCheck size={24} /></div>
           <div className="stat-info">
             <h3>8</h3>
-            <p>Check-ins Hoje</p>
+            <p>{t('home.checkins_today')}</p>
           </div>
         </div>
         <div className="stat-card">
           <div className="stat-icon"><TrendingUp size={24} /></div>
           <div className="stat-info">
             <h3>R$ 4.250</h3>
-            <p>Faturamento Diário</p>
+            <p>{t('home.daily_revenue')}</p>
           </div>
         </div>
       </div>

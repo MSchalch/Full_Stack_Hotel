@@ -3,10 +3,12 @@ import Button from '../components/atoms/Button';
 import Input from '../components/atoms/Input';
 import Modal from '../components/molecules/Modal';
 import { Search, Plus, Eye, Edit2, Power, Trash2, X } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import api from '../services/api';
 import './Hospedes.css';
 
 const Hospedes = () => {
+  const { t } = useTranslation();
   const [hospedes, setHospedes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [termoBusca, setTermoBusca] = useState('');
@@ -199,14 +201,16 @@ const Hospedes = () => {
       if (error.response && error.response.data) {
         const data = error.response.data;
         if (typeof data === 'string') {
-          setErroForm(data);
+          // Usa o t() para traduzir a string exata do erro que vem do Java, 
+          // caso não encontre retorna a própria string
+          setErroForm(t(data, data));
         } else if (data.message) {
-          setErroForm(data.message);
+          setErroForm(t(data.message, data.message));
         } else {
-          setErroForm("Ocorreu um erro ao processar a requisição.");
+          setErroForm(t('backend_error_default', "Ocorreu um erro ao processar a requisição."));
         }
       } else {
-        setErroForm("Ocorreu um erro ao salvar o hóspede.");
+        setErroForm(t('backend_error_default', "Ocorreu um erro ao processar a requisição."));
       }
     } finally {
       setSaving(false);
@@ -225,18 +229,18 @@ const Hospedes = () => {
     <div className="page-container">
       <div className="page-header">
         <div>
-          <h1>Gerenciar Hóspedes</h1>
-          <p>Listagem e cadastro de hóspedes do hotel</p>
+          <h1>{t('hospedes.title')}</h1>
+          <p>{t('hospedes.subtitle')}</p>
         </div>
         <Button variant="primary" onClick={handleNovo}>
-          <Plus size={18} /> Novo Hóspede
+          <Plus size={18} /> {t('hospedes.new')}
         </Button>
       </div>
 
       <div className="filter-bar" style={{ display: 'flex', gap: '16px', alignItems: 'center', flexWrap: 'wrap' }}>
         <div style={{ flexGrow: 1, maxWidth: '400px', position: 'relative' }}>
           <Input 
-            placeholder="Buscar hóspede por nome, CPF ou E-mail..." 
+            placeholder={t('hospedes.search_placeholder')} 
             value={termoBusca} 
             onChange={(e) => setTermoBusca(e.target.value)} 
             style={{ paddingRight: '36px' }}
@@ -265,19 +269,19 @@ const Hospedes = () => {
           )}
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <label style={{ fontSize: '14px', fontWeight: '500', color: 'var(--color-text-main)' }}>Filtrar por idade:</label>
+          <label style={{ fontSize: '14px', fontWeight: '500', color: 'var(--color-text-main)' }}>{t('hospedes.filter_age')}</label>
           <select 
             value={filtroIdade} 
             onChange={(e) => setFiltroIdade(e.target.value)}
             style={{ padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--color-border)', backgroundColor: 'transparent', color: 'var(--color-text-main)', outline: 'none', cursor: 'pointer' }}
           >
-            <option value="TODOS" style={{ color: 'black' }}>Todos</option>
-            <option value="ADULTOS" style={{ color: 'black' }}>Adultos (18+)</option>
-            <option value="CRIANCAS" style={{ color: 'black' }}>Crianças (&lt;18)</option>
+            <option value="TODOS" style={{ color: 'black' }}>{t('hospedes.all')}</option>
+            <option value="ADULTOS" style={{ color: 'black' }}>{t('hospedes.adults')}</option>
+            <option value="CRIANCAS" style={{ color: 'black' }}>{t('hospedes.kids')}</option>
           </select>
         </div>
         <Button variant="secondary" onClick={carregarHospedes}>
-          <Search size={18} /> Buscar
+          <Search size={18} /> {t('common.search', 'Buscar')}
         </Button>
       </div>
 
@@ -285,19 +289,19 @@ const Hospedes = () => {
         <table className="custom-table">
           <thead>
             <tr>
-              <th>Nome Completo</th>
-              <th>CPF</th>
-              <th>Status</th>
-              <th>Ações</th>
+              <th>{t('hospedes.table.name')}</th>
+              <th>{t('hospedes.table.cpf')}</th>
+              <th>{t('hospedes.table.status')}</th>
+              <th>{t('hospedes.table.actions')}</th>
             </tr>
           </thead>
           <tbody>
             {loading ? (
-              <tr><td colSpan="4" style={{textAlign: 'center'}}>Carregando...</td></tr>
+              <tr><td colSpan="4" style={{textAlign: 'center'}}>{t('common.loading')}</td></tr>
             ) : hospedesExibidos.length === 0 ? (
               <tr>
                 <td colSpan="6" style={{ textAlign: 'center', padding: '24px' }}>
-                  Nenhum hóspede encontrado com os filtros atuais.
+                  {t('hospedes.not_found')}
                 </td>
               </tr>
             ) : (

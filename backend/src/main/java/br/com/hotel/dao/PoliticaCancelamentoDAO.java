@@ -33,9 +33,11 @@ public class PoliticaCancelamentoDAO implements IDAO {
 
     @Override
     public void deletar(EntidadeDominio entidade) {
-        if (entidade instanceof PoliticaCancelamento pol) {
-            pol.setAtivo(false);
-            entityManager.merge(pol);
+        if (entidade instanceof PoliticaCancelamento pol && pol.getId() != null) {
+            PoliticaCancelamento pDB = entityManager.find(PoliticaCancelamento.class, pol.getId());
+            if (pDB != null) {
+                entityManager.remove(pDB);
+            }
         }
     }
 

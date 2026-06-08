@@ -32,9 +32,11 @@ public class PromocaoDAO implements IDAO {
 
     @Override
     public void deletar(EntidadeDominio entidade) {
-        if (entidade instanceof Promocao prom) {
-            prom.setAtivo(false); // Inativação lógica
-            entityManager.merge(prom);
+        if (entidade instanceof Promocao prom && prom.getId() != null) {
+            Promocao pDB = entityManager.find(Promocao.class, prom.getId());
+            if (pDB != null) {
+                entityManager.remove(pDB);
+            }
         }
     }
 

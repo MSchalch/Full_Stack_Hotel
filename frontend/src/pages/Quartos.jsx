@@ -201,7 +201,7 @@ const Quartos = () => {
                 <tr key={quarto.id}>
                   <td><Key size={14} style={{verticalAlign: 'middle', marginRight: '6px'}}/> {quarto.numero}</td>
                   <td>{quarto.tipoQuarto}</td>
-                  <td>R$ {quarto.precoBase?.toFixed(2).replace('.', ',')}</td>
+                  <td>R$ {quarto.precoBase ? quarto.precoBase.toFixed(2).replace('.', ',') : '0,00'}</td>
                   <td>{quarto.capAdultos} Adultos, {quarto.capCriancas} Crianças</td>
                   <td>
                     <span className={`badge ${quarto.ativo ? 'badge-active' : 'badge-inactive'}`}>

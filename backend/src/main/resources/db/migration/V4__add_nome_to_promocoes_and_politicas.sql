@@ -1,0 +1,2 @@
+ALTER TABLE promocao ADD COLUMN nome VARCHAR(255);
+ALTER TABLE politica_cancelamento ADD COLUMN nome VARCHAR(255);

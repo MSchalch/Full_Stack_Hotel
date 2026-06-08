@@ -96,25 +96,83 @@ public class Fachada implements IFacade {
         
         // 4. Instanciando Strategies de Reserva
         List<IStrategy> rnsSalvarReserva = new ArrayList<>();
-        rnsSalvarReserva.add(new ValidarReserva());
-        rnsSalvarReserva.add(new CalcularValorTotalReservaStrategy());
+        rnsSalvarReserva.add(new ValidarDadosObrigatoriosReservaStrategy());
+        rnsSalvarReserva.add(new ValidarDatasReservaStrategy());
+        rnsSalvarReserva.add(new ValidarCapacidadeQuartoReservaStrategy(entityManager));
+        rnsSalvarReserva.add(new ValidarDisponibilidadeQuartoStrategy(entityManager));
+        rnsSalvarReserva.add(new CalcularValorTotalReservaStrategy(entityManager));
 
         List<IStrategy> rnsAlterarReserva = new ArrayList<>();
-        rnsAlterarReserva.add(new ValidarReserva());
-        rnsAlterarReserva.add(new CalcularValorTotalReservaStrategy());
+        rnsAlterarReserva.add(new ValidarDadosObrigatoriosReservaStrategy());
+        rnsAlterarReserva.add(new ValidarDatasReservaStrategy());
+        rnsAlterarReserva.add(new ValidarCapacidadeQuartoReservaStrategy(entityManager));
+        rnsAlterarReserva.add(new ValidarDisponibilidadeQuartoStrategy(entityManager));
+        rnsAlterarReserva.add(new CalcularValorTotalReservaStrategy(entityManager));
 
         Map<String, List<IStrategy>> rnsReserva = new HashMap<>();
         rnsReserva.put("SALVAR", rnsSalvarReserva);
         rnsReserva.put("ALTERAR", rnsAlterarReserva);
+        rnsReserva.put("EXCLUIR", new ArrayList<>());
+        rnsReserva.put("CONSULTAR", new ArrayList<>());
         rns.put(Reserva.class.getName(), rnsReserva);
         
         // Regras para Pagamento
         List<IStrategy> rnsSalvarPagamento = new ArrayList<>();
-        rnsSalvarPagamento.add(new ValidarPagamento());
+        rnsSalvarPagamento.add(new ValidarDadosPagamentoStrategy());
+        rnsSalvarPagamento.add(new ValidarPagamentoDuplicadoStrategy(entityManager));
+        rnsSalvarPagamento.add(new DefinirDataOperacaoStrategy());
+        rnsSalvarPagamento.add(new AtualizarStatusReservaPagamentoStrategy(entityManager));
+        
+        List<IStrategy> rnsAlterarPagamento = new ArrayList<>();
+        rnsAlterarPagamento.add(new ValidarDadosPagamentoStrategy());
+        rnsAlterarPagamento.add(new AtualizarStatusReservaPagamentoStrategy(entityManager));
         
         Map<String, List<IStrategy>> rnsPagamento = new HashMap<>();
         rnsPagamento.put("SALVAR", rnsSalvarPagamento);
+        rnsPagamento.put("ALTERAR", rnsAlterarPagamento);
+        rnsPagamento.put("CONSULTAR", new ArrayList<>());
+        rnsPagamento.put("EXCLUIR", new ArrayList<>());
         rns.put(Pagamento.class.getName(), rnsPagamento);
+        
+        // 6. Instanciando Strategies de Promocao
+        List<IStrategy> rnsSalvarPromocao = new ArrayList<>();
+        rnsSalvarPromocao.add(new ValidarRegrasPromocaoStrategy());
+        
+        List<IStrategy> rnsAlterarPromocao = new ArrayList<>();
+        rnsAlterarPromocao.add(new ValidarRegrasPromocaoStrategy());
+        
+        List<IStrategy> rnsExcluirPromocao = new ArrayList<>();
+        rnsExcluirPromocao.add(new ValidarExclusaoPromocaoStrategy(entityManager));
+        
+        Map<String, List<IStrategy>> rnsPromocao = new HashMap<>();
+        rnsPromocao.put("SALVAR", rnsSalvarPromocao);
+        rnsPromocao.put("ALTERAR", rnsAlterarPromocao);
+        rnsPromocao.put("EXCLUIR", rnsExcluirPromocao);
+        rnsPromocao.put("CONSULTAR", new ArrayList<>());
+        
+        rns.put(Promocao.class.getName(), rnsPromocao);
+        
+        // 7. Instanciando Strategies de Politica de Cancelamento
+        List<IStrategy> rnsSalvarPolitica = new ArrayList<>();
+        rnsSalvarPolitica.add(new ValidarDadosObrigatoriosPoliticaStrategy());
+        rnsSalvarPolitica.add(new ValidarValoresPoliticaStrategy());
+
+        List<IStrategy> rnsAlterarPolitica = new ArrayList<>();
+        rnsAlterarPolitica.add(new ValidarDadosObrigatoriosPoliticaStrategy());
+        rnsAlterarPolitica.add(new ValidarValoresPoliticaStrategy());
+
+        List<IStrategy> rnsExcluirPolitica = new ArrayList<>();
+        rnsExcluirPolitica.add(new ValidarExclusaoPoliticaStrategy(entityManager));
+
+        Map<String, List<IStrategy>> rnsPolitica = new HashMap<>();
+        rnsPolitica.put("SALVAR", rnsSalvarPolitica);
+        rnsPolitica.put("ALTERAR", rnsAlterarPolitica);
+        rnsPolitica.put("EXCLUIR", rnsExcluirPolitica);
+        rnsPolitica.put("CONSULTAR", new ArrayList<>());
+
+        rns.put(PoliticaCancelamento.class.getName(), rnsPolitica);
+
+
     }
 
     @Override

@@ -8,6 +8,7 @@ import lombok.Setter;
 @Setter
 @Entity
 public class PoliticaCancelamento extends EntidadeDominio {
+    private String nome;
     private Boolean ativo = true;
     private Float porcentagem;
     private Boolean estornoValor;

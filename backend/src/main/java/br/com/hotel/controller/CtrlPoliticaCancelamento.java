@@ -22,6 +22,26 @@ public class CtrlPoliticaCancelamento {
         return ResponseEntity.ok("Política salva com sucesso");
     }
 
+    @PutMapping
+    public ResponseEntity<String> alterar(@RequestBody PoliticaCancelamento politica) {
+        String erro = fachada.alterar(politica);
+        if (erro != null) {
+            return ResponseEntity.badRequest().body(erro);
+        }
+        return ResponseEntity.ok("Política alterada com sucesso!");
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> excluir(@PathVariable Long id) {
+        PoliticaCancelamento politica = new PoliticaCancelamento();
+        politica.setId(id);
+        String erro = fachada.deletar(politica);
+        if (erro != null) {
+            return ResponseEntity.badRequest().body(erro);
+        }
+        return ResponseEntity.ok("Política excluída com sucesso!");
+    }
+
     @GetMapping
     public ResponseEntity<?> consultar() {
         return ResponseEntity.ok(fachada.consultar(new PoliticaCancelamento()));
