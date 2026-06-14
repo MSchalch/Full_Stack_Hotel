@@ -1,4 +1,4 @@
-package br.com.hotel.controller;
+package br.com.hotel.facade;
 
 import br.com.hotel.dao.*;
 import br.com.hotel.domain.*;

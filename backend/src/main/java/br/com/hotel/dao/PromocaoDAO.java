@@ -44,9 +44,6 @@ public class PromocaoDAO implements IDAO {
     public List<EntidadeDominio> consultar(EntidadeDominio entidade) {
         if (entidade instanceof Promocao prom) {
             String jpql = "SELECT p FROM Promocao p WHERE 1=1";
-            if (prom.getAtivo() != null) {
-                jpql += " AND p.ativo = " + prom.getAtivo();
-            }
             if (prom.getId() != null) {
                 jpql += " AND p.id = " + prom.getId();
             }

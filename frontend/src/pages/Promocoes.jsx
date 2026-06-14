@@ -3,10 +3,12 @@ import Button from '../components/atoms/Button';
 import Input from '../components/atoms/Input';
 import Modal from '../components/molecules/Modal';
 import { Search, Plus, Edit2, Power, Trash2, Percent } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import api from '../services/api';
 import './Hospedes.css';
 
 const Promocoes = () => {
+  const { t } = useTranslation();
   const [promocoes, setPromocoes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -124,7 +126,7 @@ const Promocoes = () => {
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm('Deseja realmente excluir esta promoção? (Recomendado apenas se não possuir histórico)')) {
+    if (window.confirm(t('promocoes.delete_confirm'))) {
       try {
         await api.delete(`/promocoes/${id}`);
         carregarPromocoes();
@@ -142,11 +144,11 @@ const Promocoes = () => {
     <div className="page-container fade-in">
       <div className="page-header">
         <div>
-          <h2>Gerenciar Promoções</h2>
-          <p>Configuração de descontos aplicáveis em reservas</p>
+          <h2>{t('promocoes.title')}</h2>
+          <p>{t('promocoes.subtitle')}</p>
         </div>
         <Button variant="primary" onClick={handleNovo}>
-          <Plus size={18} /> Nova Promoção
+          <Plus size={18} /> {t('promocoes.new')}
         </Button>
       </div>
 
@@ -155,18 +157,18 @@ const Promocoes = () => {
           <thead>
             <tr>
               <th>ID</th>
-              <th>Nome</th>
-              <th>Porcentagem</th>
-              <th>Valor Fixo</th>
-              <th>Status</th>
-              <th style={{ textAlign: 'center' }}>Ações</th>
+              <th>{t('promocoes.table.name')}</th>
+              <th>{t('promocoes.table.percent')}</th>
+              <th>{t('promocoes.table.value')}</th>
+              <th>{t('common.status')}</th>
+              <th style={{ textAlign: 'center' }}>{t('common.actions')}</th>
             </tr>
           </thead>
           <tbody>
             {loading ? (
-              <tr><td colSpan="6" style={{textAlign: 'center'}}>Carregando...</td></tr>
+              <tr><td colSpan="6" style={{textAlign: 'center'}}>{t('common.loading')}</td></tr>
             ) : promocoes.length === 0 ? (
-              <tr><td colSpan="6" style={{textAlign: 'center'}}>Nenhuma promoção encontrada.</td></tr>
+              <tr><td colSpan="6" style={{textAlign: 'center'}}>{t('promocoes.not_found')}</td></tr>
             ) : (
               promocoes.map((promo) => (
                 <tr key={promo.id}>
@@ -180,7 +182,7 @@ const Promocoes = () => {
                   <td>{promo.valorDesconto ? `R$ ${promo.valorDesconto.toFixed(2).replace('.', ',')}` : '-'}</td>
                   <td>
                     <span className={`badge ${promo.ativo ? 'badge-active' : 'badge-inactive'}`}>
-                      {promo.ativo ? 'Ativo' : 'Inativo'}
+                      {promo.ativo ? t('common.active') : t('common.inactive')}
                     </span>
                   </td>
                   <td style={{ textAlign: 'center' }}>
@@ -203,7 +205,7 @@ const Promocoes = () => {
         </table>
       </div>
 
-      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title={modalMode === 'create' ? "Nova Promoção" : "Editar Promoção"}>
+      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title={modalMode === 'create' ? t('promocoes.modal.new') : t('promocoes.modal.edit')}>
         {erroForm && (
           <div style={{ padding: '12px', backgroundColor: '#fee2e2', color: '#991b1b', borderRadius: '8px', fontSize: '14px', whiteSpace: 'pre-line', marginBottom: '16px' }}>
             {erroForm}
@@ -213,11 +215,11 @@ const Promocoes = () => {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
           
           <Input 
-            label="Nome da Promoção" 
+            label={t('promocoes.modal.name')} 
             name="nome" 
             value={formData.nome} 
             onChange={handleChange} 
-            placeholder="Ex: Promoção de Verão" 
+            placeholder="Ex: Summer Promo" 
           />
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
@@ -231,7 +233,7 @@ const Promocoes = () => {
                   checked={tipoDesconto === 'PORCENTAGEM'} 
                   onChange={handleTipoChange} 
                 />
-                Porcentagem (%)
+                %
               </label>
               <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
                 <input 
@@ -241,7 +243,7 @@ const Promocoes = () => {
                   checked={tipoDesconto === 'FIXO'} 
                   onChange={handleTipoChange} 
                 />
-                Valor Fixo (R$)
+                R$
               </label>
             </div>
           </div>
@@ -249,7 +251,7 @@ const Promocoes = () => {
           <div style={{ minHeight: '80px' }}>
             {tipoDesconto === 'PORCENTAGEM' ? (
               <Input 
-                label="Porcentagem de Desconto (%)" 
+                label={t('promocoes.modal.percent')} 
                 name="porcentagem" 
                 type="number" 
                 step="0.1" 
@@ -262,7 +264,7 @@ const Promocoes = () => {
             ) : (
               <Input 
                 className="no-spinners" 
-                label="Valor Fixo de Desconto (R$)" 
+                label={t('promocoes.modal.value')} 
                 name="valorDesconto" 
                 type="number" 
                 step="0.01" 
@@ -276,8 +278,8 @@ const Promocoes = () => {
         </div>
         
         <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', marginTop: '24px' }}>
-          <Button variant="secondary" onClick={() => setIsModalOpen(false)}>Cancelar</Button>
-          <Button variant="primary" onClick={handleSalvar}>Salvar</Button>
+          <Button variant="secondary" onClick={() => setIsModalOpen(false)}>{t('common.cancel')}</Button>
+          <Button variant="primary" onClick={handleSalvar}>{t('common.save')}</Button>
         </div>
       </Modal>
 

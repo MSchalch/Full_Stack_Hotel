@@ -3,10 +3,12 @@ import Button from '../components/atoms/Button';
 import Input from '../components/atoms/Input';
 import Modal from '../components/molecules/Modal';
 import { Search, Plus, MoreVertical, Calendar, CheckCircle, XCircle, X } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import api from '../services/api';
 import './Hospedes.css';
 
 const Reservas = () => {
+  const { t } = useTranslation();
   const [reservas, setReservas] = useState([]);
   const [hospedes, setHospedes] = useState([]);
   const [quartos, setQuartos] = useState([]);
@@ -200,11 +202,11 @@ const Reservas = () => {
     <div className="page-container fade-in">
       <div className="page-header">
         <div>
-          <h2>Gerenciar Reservas</h2>
-          <p>Controle de propostas e estadias</p>
+          <h2>{t('reservas.title')}</h2>
+          <p>{t('reservas.subtitle')}</p>
         </div>
         <Button variant="primary" onClick={handleNovo}>
-          <Plus size={18} /> Nova Reserva
+          <Plus size={18} /> {t('reservas.new')}
         </Button>
       </div>
 
@@ -213,20 +215,20 @@ const Reservas = () => {
           <thead>
             <tr>
               <th>ID</th>
-              <th>Titular</th>
-              <th>Quarto</th>
-              <th>Período</th>
-              <th>Acompanhantes</th>
-              <th>Valor Total</th>
-              <th>Status</th>
-              <th style={{ textAlign: 'center' }}>Ações</th>
+              <th>{t('reservas.table.guest')}</th>
+              <th>{t('reservas.table.room')}</th>
+              <th>{t('reservas.table.period')}</th>
+              <th>{t('reservas.modal.guest_adults')}</th>
+              <th>{t('reservas.table.value')}</th>
+              <th>{t('common.status')}</th>
+              <th style={{ textAlign: 'center' }}>{t('common.actions')}</th>
             </tr>
           </thead>
           <tbody>
             {loading ? (
-              <tr><td colSpan="8" style={{textAlign: 'center'}}>Carregando...</td></tr>
+              <tr><td colSpan="8" style={{textAlign: 'center'}}>{t('common.loading')}</td></tr>
             ) : reservas.length === 0 ? (
-              <tr><td colSpan="8" style={{textAlign: 'center'}}>Nenhuma reserva encontrada.</td></tr>
+              <tr><td colSpan="8" style={{textAlign: 'center'}}>{t('reservas.not_found')}</td></tr>
             ) : (
               reservas.map((reserva) => (
                 <tr key={reserva.id}>
@@ -254,7 +256,7 @@ const Reservas = () => {
         </table>
       </div>
 
-      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title={modalMode === 'create' ? "Nova Reserva" : "Editar Reserva"}>
+      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title={modalMode === 'create' ? t('reservas.modal.new') : t('reservas.modal.edit')}>
         {erroForm && (
           <div style={{ padding: '12px', backgroundColor: '#fee2e2', color: '#991b1b', borderRadius: '8px', fontSize: '14px', whiteSpace: 'pre-line', marginBottom: '16px' }}>
             {erroForm}
@@ -265,7 +267,7 @@ const Reservas = () => {
           
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', position: 'relative' }}>
-              <label style={{ fontSize: '14px', fontWeight: '500' }}>Titular da Reserva</label>
+              <label style={{ fontSize: '14px', fontWeight: '500' }}>{t('reservas.modal.guest_main')}</label>
               <Input 
                 placeholder="Busque por nome ou CPF..."
                 value={formData.hospedeNomeBusca}
@@ -295,7 +297,7 @@ const Reservas = () => {
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', position: 'relative' }}>
-              <label style={{ fontSize: '14px', fontWeight: '500' }}>Quarto</label>
+              <label style={{ fontSize: '14px', fontWeight: '500' }}>{t('reservas.modal.room')}</label>
               <Input 
                 placeholder="Busque por número ou tipo..."
                 value={formData.quartoNomeBusca}
@@ -327,14 +329,14 @@ const Reservas = () => {
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
             <Input 
-              label="Data de Check-In" 
+              label={t('reservas.modal.checkin')} 
               name="checkIn" 
               type="datetime-local" 
               value={formData.checkIn} 
               onChange={handleChange} 
             />
             <Input 
-              label="Data de Check-Out" 
+              label={t('reservas.modal.checkout')} 
               name="checkOut" 
               type="datetime-local" 
               value={formData.checkOut} 
@@ -344,7 +346,7 @@ const Reservas = () => {
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
             <Input 
-              label="Quantidade de Adultos (Automático)" 
+              label={t('reservas.modal.qnt_adults')} 
               name="quantAdultos" 
               type="number" 
               value={totalAdultos} 
@@ -352,7 +354,7 @@ const Reservas = () => {
               style={{ backgroundColor: 'var(--color-bg-dark)', color: 'var(--color-text-muted)', cursor: 'not-allowed' }}
             />
             <Input 
-              label="Quantidade de Crianças (Automático)" 
+              label={t('reservas.modal.qnt_kids')} 
               name="quantCriancas" 
               type="number" 
               value={totalCriancas} 
@@ -363,7 +365,7 @@ const Reservas = () => {
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', position: 'relative' }}>
-              <label style={{ fontSize: '14px', fontWeight: '500' }}>Acompanhantes (&gt; 10 anos)</label>
+              <label style={{ fontSize: '14px', fontWeight: '500' }}>{t('reservas.modal.guest_adults')}</label>
               <Input 
                 placeholder="Buscar por nome ou CPF..."
                 value={acompanhanteAdultoBusca}
@@ -412,7 +414,7 @@ const Reservas = () => {
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', position: 'relative' }}>
-              <label style={{ fontSize: '14px', fontWeight: '500' }}>Crianças (Até 10 anos)</label>
+              <label style={{ fontSize: '14px', fontWeight: '500' }}>{t('reservas.modal.guest_kids')}</label>
               <Input 
                 placeholder="Buscar por nome ou CPF..."
                 value={acompanhanteCriancaBusca}
@@ -463,7 +465,7 @@ const Reservas = () => {
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              <label style={{ fontSize: '14px', fontWeight: '500' }}>Política de Cancelamento</label>
+              <label style={{ fontSize: '14px', fontWeight: '500' }}>{t('reservas.modal.policy')}</label>
               <select className="input-field" name="politicaCancelamentoId" value={formData.politicaCancelamentoId} onChange={handleChange}>
                 <option value="">Selecione uma política...</option>
                 {politicas.filter(p => p.ativo).map(p => (
@@ -473,7 +475,7 @@ const Reservas = () => {
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              <label style={{ fontSize: '14px', fontWeight: '500' }}>Promoção</label>
+              <label style={{ fontSize: '14px', fontWeight: '500' }}>{t('reservas.modal.promo')}</label>
               <select className="input-field" name="promocaoId" value={formData.promocaoId} onChange={handleChange}>
                 <option value="">Sem promoção</option>
                 {promocoes.filter(p => p.ativo).map(p => (
@@ -484,7 +486,7 @@ const Reservas = () => {
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-            <label style={{ fontSize: '14px', fontWeight: '500' }}>Status da Reserva</label>
+            <label style={{ fontSize: '14px', fontWeight: '500' }}>{t('reservas.modal.status')}</label>
             <select className="input-field" name="status" value={formData.status} onChange={handleChange}>
               <option value="PROPOSTA">PROPOSTA (Aguardando Pagamento)</option>
               <option value="CANCELADA">CANCELADA</option>
@@ -497,8 +499,8 @@ const Reservas = () => {
         </div>
         
         <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', marginTop: '24px' }}>
-          <Button variant="secondary" onClick={() => setIsModalOpen(false)}>Cancelar</Button>
-          <Button variant="primary" onClick={handleSalvar}>Salvar Reserva</Button>
+          <Button variant="secondary" onClick={() => setIsModalOpen(false)}>{t('common.cancel')}</Button>
+          <Button variant="primary" onClick={handleSalvar}>{t('common.save')}</Button>
         </div>
       </Modal>
 

@@ -3,10 +3,12 @@ import Button from '../components/atoms/Button';
 import Input from '../components/atoms/Input';
 import Modal from '../components/molecules/Modal';
 import { Search, Plus, MoreVertical, DollarSign, ArrowLeftRight } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import api from '../services/api';
 import './Hospedes.css';
 
 const Pagamentos = () => {
+  const { t } = useTranslation();
   const [pagamentos, setPagamentos] = useState([]);
   const [reservas, setReservas] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -128,11 +130,11 @@ const Pagamentos = () => {
     <div className="page-container fade-in">
       <div className="page-header">
         <div>
-          <h2>Controle de Pagamentos</h2>
-          <p>Recebimentos e faturamento das reservas</p>
+          <h2>{t('pagamentos.title')}</h2>
+          <p>{t('pagamentos.subtitle')}</p>
         </div>
         <Button variant="primary" onClick={handleNovo}>
-          <DollarSign size={18} /> Registrar Pagamento
+          <DollarSign size={18} /> {t('pagamentos.new')}
         </Button>
       </div>
 
@@ -141,19 +143,19 @@ const Pagamentos = () => {
           <thead>
             <tr>
               <th>ID</th>
-              <th>Reserva / Hóspede</th>
-              <th>Valor Recebido</th>
-              <th>Forma</th>
+              <th>{t('pagamentos.table.reserva')}</th>
+              <th>{t('pagamentos.table.amount')}</th>
+              <th>{t('pagamentos.table.method')}</th>
               <th>Data/Hora</th>
-              <th>Status</th>
-              <th style={{ textAlign: 'center' }}>Ações</th>
+              <th>{t('pagamentos.table.status')}</th>
+              <th style={{ textAlign: 'center' }}>{t('common.actions')}</th>
             </tr>
           </thead>
           <tbody>
             {loading ? (
-              <tr><td colSpan="7" style={{textAlign: 'center'}}>Carregando...</td></tr>
+              <tr><td colSpan="7" style={{textAlign: 'center'}}>{t('common.loading')}</td></tr>
             ) : pagamentos.length === 0 ? (
-              <tr><td colSpan="7" style={{textAlign: 'center'}}>Nenhum pagamento registrado.</td></tr>
+              <tr><td colSpan="7" style={{textAlign: 'center'}}>{t('pagamentos.not_found')}</td></tr>
             ) : (
               pagamentos.map((pagamento) => (
                 <tr key={pagamento.id}>
@@ -187,7 +189,7 @@ const Pagamentos = () => {
         </table>
       </div>
 
-      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title={modalMode === 'create' ? "Registrar Pagamento" : "Editar Pagamento / Estorno"}>
+      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title={modalMode === 'create' ? t('pagamentos.modal.new') : t('pagamentos.modal.edit')}>
         {erroForm && (
           <div style={{ padding: '12px', backgroundColor: '#fee2e2', color: '#991b1b', borderRadius: '8px', fontSize: '14px', whiteSpace: 'pre-line', marginBottom: '16px' }}>
             {erroForm}
@@ -197,7 +199,7 @@ const Pagamentos = () => {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-            <label style={{ fontSize: '14px', fontWeight: '500' }}>Reserva</label>
+            <label style={{ fontSize: '14px', fontWeight: '500' }}>{t('pagamentos.modal.reserva_id')}</label>
             <select 
               className="custom-input" 
               name="reservaId" 
@@ -223,7 +225,7 @@ const Pagamentos = () => {
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
             <Input 
-              label="Valor (R$)" 
+              label={t('pagamentos.modal.amount')} 
               name="valor" 
               type="number"
               step="0.01" 
@@ -233,7 +235,7 @@ const Pagamentos = () => {
             />
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              <label style={{ fontSize: '14px', fontWeight: '500' }}>Forma de Pagamento</label>
+              <label style={{ fontSize: '14px', fontWeight: '500' }}>{t('pagamentos.modal.method')}</label>
               <select 
                 className="custom-input" 
                 name="formaPagamento" 
@@ -251,7 +253,7 @@ const Pagamentos = () => {
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-            <label style={{ fontSize: '14px', fontWeight: '500' }}>Status do Pagamento</label>
+            <label style={{ fontSize: '14px', fontWeight: '500' }}>{t('pagamentos.modal.status')}</label>
             <select 
               className="custom-input" 
               name="statusPagamento" 
@@ -271,8 +273,8 @@ const Pagamentos = () => {
         </div>
         
         <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', marginTop: '24px' }}>
-          <Button variant="secondary" onClick={() => setIsModalOpen(false)}>Cancelar</Button>
-          <Button variant="primary" onClick={handleSalvar}>{modalMode === 'create' ? "Registrar Pagamento" : "Atualizar Pagamento"}</Button>
+          <Button variant="secondary" onClick={() => setIsModalOpen(false)}>{t('common.cancel')}</Button>
+          <Button variant="primary" onClick={handleSalvar}>{t('common.save')}</Button>
         </div>
       </Modal>
 

@@ -43,7 +43,7 @@ public class PoliticaCancelamentoDAO implements IDAO {
 
     @Override
     public List<EntidadeDominio> consultar(EntidadeDominio entidade) {
-        String jpql = "SELECT p FROM PoliticaCancelamento p WHERE p.ativo = true";
+        String jpql = "SELECT p FROM PoliticaCancelamento p";
         TypedQuery<PoliticaCancelamento> query = entityManager.createQuery(jpql, PoliticaCancelamento.class);
         return (List<EntidadeDominio>) (List<?>) query.getResultList();
     }

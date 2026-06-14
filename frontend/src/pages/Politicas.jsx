@@ -3,10 +3,12 @@ import Button from '../components/atoms/Button';
 import Input from '../components/atoms/Input';
 import Modal from '../components/molecules/Modal';
 import { Plus, Edit2, Power, Trash2, ShieldAlert } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import api from '../services/api';
 import './Hospedes.css';
 
 const Politicas = () => {
+  const { t } = useTranslation();
   const [politicas, setPoliticas] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -109,7 +111,7 @@ const Politicas = () => {
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm('Deseja realmente excluir esta política? (Recomendado apenas se não possuir histórico)')) {
+    if (window.confirm(t('politicas.delete_confirm'))) {
       try {
         await api.delete(`/politicas-cancelamento/${id}`);
         carregarPoliticas();
@@ -127,11 +129,11 @@ const Politicas = () => {
     <div className="page-container fade-in">
       <div className="page-header">
         <div>
-          <h2>Políticas de Cancelamento</h2>
-          <p>Regras de retenção de valores por cancelamento</p>
+          <h2>{t('politicas.title')}</h2>
+          <p>{t('politicas.subtitle')}</p>
         </div>
         <Button variant="primary" onClick={handleNovo}>
-          <Plus size={18} /> Nova Política
+          <Plus size={18} /> {t('politicas.new')}
         </Button>
       </div>
 
@@ -140,19 +142,19 @@ const Politicas = () => {
           <thead>
             <tr>
               <th>ID</th>
-              <th>Nome da Política</th>
-              <th>Multa (%)</th>
-              <th>Horas de Antecedência</th>
-              <th>Estorno de Valores</th>
-              <th>Status</th>
-              <th style={{ textAlign: 'center' }}>Ações</th>
+              <th>{t('politicas.table.name')}</th>
+              <th>{t('politicas.table.percent')}</th>
+              <th>{t('politicas.table.hours')}</th>
+              <th>{t('politicas.table.refund')}</th>
+              <th>{t('common.status')}</th>
+              <th style={{ textAlign: 'center' }}>{t('common.actions')}</th>
             </tr>
           </thead>
           <tbody>
             {loading ? (
-              <tr><td colSpan="7" style={{textAlign: 'center'}}>Carregando...</td></tr>
+              <tr><td colSpan="7" style={{textAlign: 'center'}}>{t('common.loading')}</td></tr>
             ) : politicas.length === 0 ? (
-              <tr><td colSpan="7" style={{textAlign: 'center'}}>Nenhuma política encontrada.</td></tr>
+              <tr><td colSpan="7" style={{textAlign: 'center'}}>{t('politicas.not_found')}</td></tr>
             ) : (
               politicas.map((pol) => (
                 <tr key={pol.id}>
@@ -162,15 +164,15 @@ const Politicas = () => {
                   </td>
                   <td>{pol.nome || 'Sem Nome'}</td>
                   <td>{pol.porcentagem}%</td>
-                  <td>{pol.horasAntesCancelamento}h ({pol.horasAntesCancelamento / 24} dias)</td>
+                  <td>{pol.horasAntesCancelamento}h</td>
                   <td>
                     <span style={{ color: pol.estornoValor ? 'green' : 'var(--color-danger)', fontWeight: '500' }}>
-                      {pol.estornoValor ? 'Sim' : 'Não'}
+                      {pol.estornoValor ? t('common.yes') : t('common.no')}
                     </span>
                   </td>
                   <td>
                     <span className={`badge ${pol.ativo ? 'badge-active' : 'badge-inactive'}`}>
-                      {pol.ativo ? 'Ativo' : 'Inativo'}
+                      {pol.ativo ? t('common.active') : t('common.inactive')}
                     </span>
                   </td>
                   <td style={{ textAlign: 'center' }}>
@@ -193,7 +195,7 @@ const Politicas = () => {
         </table>
       </div>
 
-      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title={modalMode === 'create' ? "Nova Política" : "Editar Política"}>
+      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title={modalMode === 'create' ? t('politicas.modal.new') : t('politicas.modal.edit')}>
         {erroForm && (
           <div style={{ padding: '12px', backgroundColor: '#fee2e2', color: '#991b1b', borderRadius: '8px', fontSize: '14px', whiteSpace: 'pre-line', marginBottom: '16px' }}>
             {erroForm}
@@ -203,7 +205,7 @@ const Politicas = () => {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
           
           <Input 
-            label="Nome da Política" 
+            label={t('politicas.modal.name')} 
             name="nome" 
             value={formData.nome} 
             onChange={handleChange} 
@@ -212,7 +214,7 @@ const Politicas = () => {
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
             <Input 
-              label="Taxa de Retenção/Multa (%)" 
+              label={t('politicas.modal.percent')} 
               name="porcentagem" 
               type="number" 
               step="0.1" 
@@ -224,7 +226,7 @@ const Politicas = () => {
             />
 
             <Input 
-              label="Antecedência Limite (em Horas)" 
+              label={t('politicas.modal.hours')} 
               name="horasAntesCancelamento" 
               type="number" 
               value={formData.horasAntesCancelamento} 
@@ -234,23 +236,23 @@ const Politicas = () => {
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-            <label style={{ fontSize: '14px', fontWeight: '500' }}>Permite estorno do valor pago?</label>
+            <label style={{ fontSize: '14px', fontWeight: '500' }}>{t('politicas.modal.refund')}</label>
             <select 
               className="custom-input" 
               name="estornoValor" 
               value={formData.estornoValor} 
               onChange={handleChange}
             >
-              <option value="true">Sim, permite estorno</option>
-              <option value="false">Não, sem estorno</option>
+              <option value="true">{t('common.yes')}</option>
+              <option value="false">{t('common.no')}</option>
             </select>
           </div>
           
         </div>
         
         <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', marginTop: '24px' }}>
-          <Button variant="secondary" onClick={() => setIsModalOpen(false)}>Cancelar</Button>
-          <Button variant="primary" onClick={handleSalvar}>Salvar</Button>
+          <Button variant="secondary" onClick={() => setIsModalOpen(false)}>{t('common.cancel')}</Button>
+          <Button variant="primary" onClick={handleSalvar}>{t('common.save')}</Button>
         </div>
       </Modal>
 
