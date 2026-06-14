@@ -23,7 +23,8 @@ public class CtrlPagamento {
     }
 
     @GetMapping
-    public ResponseEntity<?> consultar() {
-        return ResponseEntity.ok(fachada.consultar(new Pagamento()));
+    public ResponseEntity<?> consultar(@RequestParam(defaultValue = "0") int page,
+                                       @RequestParam(defaultValue = "10") int size) {
+        return ResponseEntity.ok(fachada.consultarPaginado(new Pagamento(), page, size));
     }
 }

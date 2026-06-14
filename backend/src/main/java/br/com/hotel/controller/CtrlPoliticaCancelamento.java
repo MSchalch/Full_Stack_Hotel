@@ -43,7 +43,8 @@ public class CtrlPoliticaCancelamento {
     }
 
     @GetMapping
-    public ResponseEntity<?> consultar() {
-        return ResponseEntity.ok(fachada.consultar(new PoliticaCancelamento()));
+    public ResponseEntity<?> consultar(@RequestParam(defaultValue = "0") int page,
+                                       @RequestParam(defaultValue = "10") int size) {
+        return ResponseEntity.ok(fachada.consultarPaginado(new PoliticaCancelamento(), page, size));
     }
 }

@@ -43,7 +43,9 @@ public class CtrlQuarto {
     }
 
     @GetMapping
-    public ResponseEntity<?> consultar(@RequestParam(required = false) String termo) {
+    public ResponseEntity<?> consultar(@RequestParam(required = false) String termo,
+                                       @RequestParam(defaultValue = "0") int page,
+                                       @RequestParam(defaultValue = "10") int size) {
         Quarto quarto = new Quarto();
         if (termo != null && !termo.trim().isEmpty()) {
             try {
@@ -52,6 +54,6 @@ public class CtrlQuarto {
                 // Ignorar se não for número
             }
         }
-        return ResponseEntity.ok(fachada.consultar(quarto));
+        return ResponseEntity.ok(fachada.consultarPaginado(quarto, page, size));
     }
 }

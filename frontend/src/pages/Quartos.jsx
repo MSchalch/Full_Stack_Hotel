@@ -4,6 +4,7 @@ import Input from '../components/atoms/Input';
 import Modal from '../components/molecules/Modal';
 import { Search, Plus, Edit2, Power, Trash2, Key, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import Pagination from '../components/molecules/Pagination';
 import api from '../services/api';
 import './Hospedes.css';
 
@@ -15,6 +16,9 @@ const Quartos = () => {
   const [modalMode, setModalMode] = useState('create'); // 'create', 'edit'
   const [erroForm, setErroForm] = useState(null);
   const [termoBusca, setTermoBusca] = useState('');
+  const [page, setPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const size = 10;
   
   const [formData, setFormData] = useState({
     id: null,
@@ -28,15 +32,21 @@ const Quartos = () => {
 
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
-      carregarQuartos();
+      setPage(0);
+      carregarQuartos(0);
     }, 500);
     return () => clearTimeout(delayDebounceFn);
   }, [termoBusca]);
 
-  const carregarQuartos = async () => {
+  useEffect(() => {
+    carregarQuartos(page);
+  }, [page]);
+
+  const carregarQuartos = async (currentPage = page) => {
     try {
-      const response = await api.get('/quartos', { params: { termo: termoBusca } });
-      setQuartos(response.data || []);
+      const response = await api.get('/quartos', { params: { termo: termoBusca, page: currentPage, size } });
+      setQuartos(response.data.content || []);
+      setTotalPages(response.data.totalPages || 0);
     } catch (error) {
       console.error("Erro ao carregar quartos:", error);
     } finally {
@@ -228,6 +238,7 @@ const Quartos = () => {
             )}
           </tbody>
         </table>
+        <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
       </div>
 
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title={modalMode === 'create' ? t('quartos.modal.new') : t('quartos.modal.edit')}>

@@ -4,6 +4,7 @@ import Input from '../components/atoms/Input';
 import Modal from '../components/molecules/Modal';
 import { Plus, Edit2, Power, Trash2, ShieldAlert } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import Pagination from '../components/molecules/Pagination';
 import api from '../services/api';
 import './Hospedes.css';
 
@@ -14,6 +15,9 @@ const Politicas = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState('create');
   const [erroForm, setErroForm] = useState(null);
+  const [page, setPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const size = 10;
 
   const [formData, setFormData] = useState({
     id: null,
@@ -25,13 +29,14 @@ const Politicas = () => {
   });
 
   useEffect(() => {
-    carregarPoliticas();
-  }, []);
+    carregarPoliticas(page);
+  }, [page]);
 
-  const carregarPoliticas = async () => {
+  const carregarPoliticas = async (currentPage = page) => {
     try {
-      const response = await api.get('/politicas-cancelamento');
-      setPoliticas(response.data || []);
+      const response = await api.get('/politicas-cancelamento', { params: { page: currentPage, size } });
+      setPoliticas(response.data.content || []);
+      setTotalPages(response.data.totalPages || 0);
     } catch (error) {
       console.error("Erro ao carregar políticas:", error);
     } finally {
@@ -193,6 +198,7 @@ const Politicas = () => {
             )}
           </tbody>
         </table>
+        <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
       </div>
 
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title={modalMode === 'create' ? t('politicas.modal.new') : t('politicas.modal.edit')}>

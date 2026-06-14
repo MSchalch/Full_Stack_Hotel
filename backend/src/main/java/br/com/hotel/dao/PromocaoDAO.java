@@ -2,6 +2,7 @@ package br.com.hotel.dao;
 
 import br.com.hotel.domain.EntidadeDominio;
 import br.com.hotel.domain.Promocao;
+import br.com.hotel.dto.PageDTO;
 import jakarta.persistence.EntityManager;
 import org.springframework.stereotype.Repository;
 
@@ -50,5 +51,25 @@ public class PromocaoDAO implements IDAO {
             return entityManager.createQuery(jpql, EntidadeDominio.class).getResultList();
         }
         return null;
+    }
+
+    @Override
+    public PageDTO<EntidadeDominio> consultarPaginado(EntidadeDominio entidade, int page, int size) {
+        if (entidade instanceof Promocao prom) {
+            StringBuilder baseJpql = new StringBuilder("FROM Promocao p WHERE 1=1");
+            if (prom.getId() != null) {
+                baseJpql.append(" AND p.id = ").append(prom.getId());
+            }
+
+            long totalElements = entityManager.createQuery("SELECT COUNT(p) " + baseJpql.toString(), Long.class).getSingleResult();
+
+            String fetchJpql = "SELECT p " + baseJpql.toString() + " ORDER BY p.id DESC";
+            var query = entityManager.createQuery(fetchJpql, Promocao.class);
+            query.setFirstResult(page * size);
+            query.setMaxResults(size);
+
+            return new PageDTO<>((List<EntidadeDominio>) (List<?>) query.getResultList(), totalElements, size, page);
+        }
+        return new PageDTO<>(List.of(), 0, size, page);
     }
 }

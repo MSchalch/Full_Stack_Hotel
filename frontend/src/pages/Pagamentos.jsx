@@ -4,6 +4,7 @@ import Input from '../components/atoms/Input';
 import Modal from '../components/molecules/Modal';
 import { Search, Plus, MoreVertical, DollarSign, ArrowLeftRight } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import Pagination from '../components/molecules/Pagination';
 import api from '../services/api';
 import './Hospedes.css';
 
@@ -15,6 +16,9 @@ const Pagamentos = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState('create');
   const [erroForm, setErroForm] = useState(null);
+  const [page, setPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const size = 10;
 
   const [formData, setFormData] = useState({
     id: null,
@@ -25,15 +29,19 @@ const Pagamentos = () => {
   });
 
   useEffect(() => {
-    carregarPagamentos();
     carregarReservas();
   }, []);
 
-  const carregarPagamentos = async () => {
+  useEffect(() => {
+    carregarPagamentos(page);
+  }, [page]);
+
+  const carregarPagamentos = async (currentPage = page) => {
     try {
       setLoading(true);
-      const response = await api.get('/pagamentos');
-      setPagamentos(response.data || []);
+      const response = await api.get('/pagamentos', { params: { page: currentPage, size } });
+      setPagamentos(response.data.content || []);
+      setTotalPages(response.data.totalPages || 0);
     } catch (error) {
       console.error("Erro ao carregar pagamentos:", error);
     } finally {
@@ -43,8 +51,8 @@ const Pagamentos = () => {
 
   const carregarReservas = async () => {
     try {
-      const response = await api.get('/reservas');
-      setReservas(response.data || []);
+      const response = await api.get('/reservas', { params: { size: 1000 } });
+      setReservas(response.data?.content || []);
     } catch (error) {
       console.error("Erro ao carregar reservas:", error);
     }
@@ -187,6 +195,7 @@ const Pagamentos = () => {
             )}
           </tbody>
         </table>
+        <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
       </div>
 
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title={modalMode === 'create' ? t('pagamentos.modal.new') : t('pagamentos.modal.edit')}>

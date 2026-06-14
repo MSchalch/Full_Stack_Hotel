@@ -4,6 +4,7 @@ import Input from '../components/atoms/Input';
 import Modal from '../components/molecules/Modal';
 import { Search, Plus, Edit2, Power, Trash2, Percent } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import Pagination from '../components/molecules/Pagination';
 import api from '../services/api';
 import './Hospedes.css';
 
@@ -14,6 +15,9 @@ const Promocoes = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState('create');
   const [erroForm, setErroForm] = useState(null);
+  const [page, setPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const size = 10;
 
   const [tipoDesconto, setTipoDesconto] = useState('PORCENTAGEM'); // PORCENTAGEM ou FIXO
   const [formData, setFormData] = useState({
@@ -25,13 +29,14 @@ const Promocoes = () => {
   });
 
   useEffect(() => {
-    carregarPromocoes();
-  }, []);
+    carregarPromocoes(page);
+  }, [page]);
 
-  const carregarPromocoes = async () => {
+  const carregarPromocoes = async (currentPage = page) => {
     try {
-      const response = await api.get('/promocoes');
-      setPromocoes(response.data || []);
+      const response = await api.get('/promocoes', { params: { page: currentPage, size } });
+      setPromocoes(response.data.content || []);
+      setTotalPages(response.data.totalPages || 0);
     } catch (error) {
       console.error("Erro ao carregar promoções:", error);
     } finally {
@@ -203,6 +208,7 @@ const Promocoes = () => {
             )}
           </tbody>
         </table>
+        <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
       </div>
 
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title={modalMode === 'create' ? t('promocoes.modal.new') : t('promocoes.modal.edit')}>

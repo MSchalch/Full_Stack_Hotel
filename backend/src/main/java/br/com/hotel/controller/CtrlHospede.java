@@ -43,11 +43,13 @@ public class CtrlHospede {
     }
 
     @GetMapping
-    public ResponseEntity<?> consultar(@RequestParam(required = false) String termo) {
+    public ResponseEntity<?> consultar(@RequestParam(required = false) String termo,
+                                       @RequestParam(defaultValue = "0") int page,
+                                       @RequestParam(defaultValue = "10") int size) {
         Hospede hospedeFiltro = new Hospede();
         if (termo != null && !termo.trim().isEmpty()) {
             hospedeFiltro.setNomeCompleto(termo);
         }
-        return ResponseEntity.ok(fachada.consultar(hospedeFiltro));
+        return ResponseEntity.ok(fachada.consultarPaginado(hospedeFiltro, page, size));
     }
 }

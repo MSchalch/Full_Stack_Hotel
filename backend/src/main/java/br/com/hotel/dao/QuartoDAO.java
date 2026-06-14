@@ -2,6 +2,7 @@ package br.com.hotel.dao;
 
 import br.com.hotel.domain.EntidadeDominio;
 import br.com.hotel.domain.Quarto;
+import br.com.hotel.dto.PageDTO;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 import org.springframework.stereotype.Repository;
@@ -57,5 +58,33 @@ public class QuartoDAO implements IDAO {
             return (List<EntidadeDominio>) (List<?>) query.getResultList();
         }
         return List.of();
+    }
+
+    @Override
+    public PageDTO<EntidadeDominio> consultarPaginado(EntidadeDominio entidade, int page, int size) {
+        if (entidade instanceof Quarto q) {
+            StringBuilder baseJpql = new StringBuilder("FROM Quarto q WHERE 1=1");
+            if (q.getNumero() != null) {
+                baseJpql.append(" AND CAST(q.numero AS string) LIKE :numero");
+            }
+            
+            TypedQuery<Long> countQuery = entityManager.createQuery("SELECT COUNT(q) " + baseJpql.toString(), Long.class);
+            if (q.getNumero() != null) {
+                countQuery.setParameter("numero", "%" + q.getNumero() + "%");
+            }
+            long totalElements = countQuery.getSingleResult();
+
+            String fetchJpql = "SELECT q " + baseJpql.toString() + " ORDER BY q.numero";
+            TypedQuery<Quarto> query = entityManager.createQuery(fetchJpql, Quarto.class);
+            if (q.getNumero() != null) {
+                query.setParameter("numero", "%" + q.getNumero() + "%");
+            }
+            
+            query.setFirstResult(page * size);
+            query.setMaxResults(size);
+            
+            return new PageDTO<>((List<EntidadeDominio>) (List<?>) query.getResultList(), totalElements, size, page);
+        }
+        return new PageDTO<>(List.of(), 0, size, page);
     }
 }

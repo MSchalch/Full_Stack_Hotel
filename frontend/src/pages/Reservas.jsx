@@ -4,6 +4,7 @@ import Input from '../components/atoms/Input';
 import Modal from '../components/molecules/Modal';
 import { Search, Plus, MoreVertical, Calendar, CheckCircle, XCircle, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import Pagination from '../components/molecules/Pagination';
 import api from '../services/api';
 import './Hospedes.css';
 
@@ -25,6 +26,9 @@ const Reservas = () => {
   const [showAcompanhanteCriancaDropdown, setShowAcompanhanteCriancaDropdown] = useState(false);
   const [acompanhanteAdultoBusca, setAcompanhanteAdultoBusca] = useState('');
   const [acompanhanteCriancaBusca, setAcompanhanteCriancaBusca] = useState('');
+  const [page, setPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const size = 10;
 
   const [formData, setFormData] = useState({
     id: null,
@@ -44,30 +48,34 @@ const Reservas = () => {
 
   useEffect(() => {
     carregarDadosBase();
-    carregarReservas();
   }, []);
+
+  useEffect(() => {
+    carregarReservas(page);
+  }, [page]);
 
   const carregarDadosBase = async () => {
     try {
       const [respHospedes, respQuartos, respPoliticas, respPromocoes] = await Promise.all([
-        api.get('/hospedes'),
-        api.get('/quartos'),
-        api.get('/politicas-cancelamento'),
-        api.get('/promocoes')
+        api.get('/hospedes', { params: { size: 1000 } }),
+        api.get('/quartos', { params: { size: 1000 } }),
+        api.get('/politicas-cancelamento', { params: { size: 1000 } }),
+        api.get('/promocoes', { params: { size: 1000 } })
       ]);
-      setHospedes(respHospedes.data || []);
-      setQuartos(respQuartos.data || []);
-      setPoliticas(respPoliticas.data || []);
-      setPromocoes(respPromocoes.data || []);
+      setHospedes(respHospedes.data?.content || []);
+      setQuartos(respQuartos.data?.content || []);
+      setPoliticas(respPoliticas.data?.content || []);
+      setPromocoes(respPromocoes.data?.content || []);
     } catch (error) {
       console.error("Erro ao carregar dados base:", error);
     }
   };
 
-  const carregarReservas = async () => {
+  const carregarReservas = async (currentPage = page) => {
     try {
-      const response = await api.get('/reservas');
-      setReservas(response.data || []);
+      const response = await api.get('/reservas', { params: { page: currentPage, size } });
+      setReservas(response.data.content || []);
+      setTotalPages(response.data.totalPages || 0);
     } catch (error) {
       console.error("Erro ao carregar reservas:", error);
     } finally {
@@ -254,6 +262,7 @@ const Reservas = () => {
             )}
           </tbody>
         </table>
+        <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
       </div>
 
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title={modalMode === 'create' ? t('reservas.modal.new') : t('reservas.modal.edit')}>
@@ -469,7 +478,9 @@ const Reservas = () => {
               <select className="input-field" name="politicaCancelamentoId" value={formData.politicaCancelamentoId} onChange={handleChange}>
                 <option value="">Selecione uma política...</option>
                 {politicas.filter(p => p.ativo).map(p => (
-                  <option key={p.id} value={p.id}>{p.nome}</option>
+                  <option key={p.id} value={p.id}>
+                    {p.nome || `Política #${p.id} (${p.porcentagem || 0}%)`}
+                  </option>
                 ))}
               </select>
             </div>
@@ -479,7 +490,9 @@ const Reservas = () => {
               <select className="input-field" name="promocaoId" value={formData.promocaoId} onChange={handleChange}>
                 <option value="">Sem promoção</option>
                 {promocoes.filter(p => p.ativo).map(p => (
-                  <option key={p.id} value={p.id}>{p.nome}</option>
+                  <option key={p.id} value={p.id}>
+                    {p.nome || `Promoção #${p.id} (${p.porcentagem || 0}%)`}
+                  </option>
                 ))}
               </select>
             </div>

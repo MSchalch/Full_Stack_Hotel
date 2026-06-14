@@ -4,6 +4,7 @@ import Input from '../components/atoms/Input';
 import Modal from '../components/molecules/Modal';
 import { Search, Plus, Eye, Edit2, Power, Trash2, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import Pagination from '../components/molecules/Pagination';
 import api from '../services/api';
 import './Hospedes.css';
 
@@ -12,6 +13,9 @@ const Hospedes = () => {
   const [hospedes, setHospedes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [termoBusca, setTermoBusca] = useState('');
+  const [page, setPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const size = 10;
   
   // Estados do Modal e Formulário
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -41,15 +45,21 @@ const Hospedes = () => {
 
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
-      carregarHospedes();
+      setPage(0);
+      carregarHospedes(0);
     }, 500);
     return () => clearTimeout(delayDebounceFn);
   }, [termoBusca]);
 
-  const carregarHospedes = async () => {
+  useEffect(() => {
+    carregarHospedes(page);
+  }, [page]);
+
+  const carregarHospedes = async (currentPage = page) => {
     try {
-      const response = await api.get('/hospedes', { params: { termo: termoBusca } });
-      setHospedes(response.data || []);
+      const response = await api.get('/hospedes', { params: { termo: termoBusca, page: currentPage, size } });
+      setHospedes(response.data.content || []);
+      setTotalPages(response.data.totalPages || 0);
     } catch (error) {
       console.error("Erro ao carregar hóspedes:", error);
     } finally {
@@ -325,6 +335,7 @@ const Hospedes = () => {
             )}
           </tbody>
         </table>
+        <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
       </div>
 
       {/* Modal de Cadastro */}

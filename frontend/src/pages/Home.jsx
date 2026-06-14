@@ -16,14 +16,14 @@ const Home = () => {
     const fetchStats = async () => {
       try {
         const [hospedesRes, quartosRes, reservasRes] = await Promise.all([
-          api.get('/hospedes'),
-          api.get('/quartos'),
-          api.get('/reservas')
+          api.get('/hospedes', { params: { size: 1000 } }),
+          api.get('/quartos', { params: { size: 1000 } }),
+          api.get('/reservas', { params: { size: 1000 } })
         ]);
         
-        const hospedes = hospedesRes.data || [];
-        const quartos = quartosRes.data || [];
-        const reservas = reservasRes.data || [];
+        const hospedes = hospedesRes.data?.content || [];
+        const quartos = quartosRes.data?.content || [];
+        const reservas = reservasRes.data?.content || [];
 
         setStats({
           hospedesAtivos: hospedes.length, 

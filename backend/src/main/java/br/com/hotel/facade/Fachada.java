@@ -2,6 +2,7 @@ package br.com.hotel.facade;
 
 import br.com.hotel.dao.*;
 import br.com.hotel.domain.*;
+import br.com.hotel.dto.PageDTO;
 import br.com.hotel.facade.IFacade;
 import br.com.hotel.service.ViaCepService;
 import br.com.hotel.strategy.*;
@@ -192,10 +193,14 @@ public class Fachada implements IFacade {
 
     @Override
     public List<EntidadeDominio> consultar(EntidadeDominio entidade) {
-        // Implementação básica: se tiver estratégia de filtro, executa.
-        // Como o retorno principal aqui é lista, a filtragem pode ser feita no DAO
         String nomeClasse = entidade.getClass().getName();
         return daos.get(nomeClasse).consultar(entidade);
+    }
+
+    @Override
+    public PageDTO<EntidadeDominio> consultarPaginado(EntidadeDominio entidade, int page, int size) {
+        String nomeClasse = entidade.getClass().getName();
+        return daos.get(nomeClasse).consultarPaginado(entidade, page, size);
     }
 
     private String executarRegras(EntidadeDominio entidade, String operacao) {
