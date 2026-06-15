@@ -286,10 +286,10 @@ const Reservas = () => {
               />
               {showHospedeDropdown && (
                 <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)', borderRadius: '8px', maxHeight: '150px', overflowY: 'auto', zIndex: 10, boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' }}>
-                  {hospedes.filter(h => (h.nomeCompleto.toLowerCase().includes((formData.hospedeNomeBusca||'').toLowerCase()) || h.cpf.includes(formData.hospedeNomeBusca||'')) && calcularIdade(h.dataNascimento) >= 18).length === 0 && (
-                     <div style={{ padding: '8px 12px', color: 'var(--color-text-muted)' }}>Nenhum hóspede adulto encontrado</div>
+                  {hospedes.filter(h => h.ativo && (h.nomeCompleto.toLowerCase().includes((formData.hospedeNomeBusca||'').toLowerCase()) || h.cpf.includes(formData.hospedeNomeBusca||'')) && calcularIdade(h.dataNascimento) >= 18).length === 0 && (
+                     <div style={{ padding: '8px 12px', color: 'var(--color-text-muted)' }}>Nenhum hóspede adulto ativo encontrado</div>
                   )}
-                  {hospedes.filter(h => (h.nomeCompleto.toLowerCase().includes((formData.hospedeNomeBusca||'').toLowerCase()) || h.cpf.includes(formData.hospedeNomeBusca||'')) && calcularIdade(h.dataNascimento) >= 18).map(h => (
+                  {hospedes.filter(h => h.ativo && (h.nomeCompleto.toLowerCase().includes((formData.hospedeNomeBusca||'').toLowerCase()) || h.cpf.includes(formData.hospedeNomeBusca||'')) && calcularIdade(h.dataNascimento) >= 18).map(h => (
                     <div 
                       key={h.id} 
                       style={{ padding: '8px 12px', cursor: 'pointer', borderBottom: '1px solid var(--color-border)', color: 'var(--color-text-main)' }}
@@ -384,10 +384,10 @@ const Reservas = () => {
               />
               {showAcompanhanteAdultoDropdown && (
                 <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)', borderRadius: '8px', maxHeight: '150px', overflowY: 'auto', zIndex: 10, boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' }}>
-                  {hospedes.filter(h => h.id.toString() !== formData.hospedeId && !formData.acompanhantes.includes(h.id) && calcularIdade(h.dataNascimento) > 10 && (h.nomeCompleto.toLowerCase().includes(acompanhanteAdultoBusca.toLowerCase()) || h.cpf.includes(acompanhanteAdultoBusca))).length === 0 && (
-                     <div style={{ padding: '8px 12px', color: 'var(--color-text-muted)' }}>Nenhum acompanhante encontrado</div>
+                  {hospedes.filter(h => h.ativo && h.id.toString() !== formData.hospedeId && !formData.acompanhantes.includes(h.id) && calcularIdade(h.dataNascimento) > 10 && (h.nomeCompleto.toLowerCase().includes(acompanhanteAdultoBusca.toLowerCase()) || h.cpf.includes(acompanhanteAdultoBusca))).length === 0 && (
+                     <div style={{ padding: '8px 12px', color: 'var(--color-text-muted)' }}>Nenhum acompanhante ativo encontrado</div>
                   )}
-                  {hospedes.filter(h => h.id.toString() !== formData.hospedeId && !formData.acompanhantes.includes(h.id) && calcularIdade(h.dataNascimento) > 10 && (h.nomeCompleto.toLowerCase().includes(acompanhanteAdultoBusca.toLowerCase()) || h.cpf.includes(acompanhanteAdultoBusca))).map(h => (
+                  {hospedes.filter(h => h.ativo && h.id.toString() !== formData.hospedeId && !formData.acompanhantes.includes(h.id) && calcularIdade(h.dataNascimento) > 10 && (h.nomeCompleto.toLowerCase().includes(acompanhanteAdultoBusca.toLowerCase()) || h.cpf.includes(acompanhanteAdultoBusca))).map(h => (
                     <div 
                       key={h.id} 
                       style={{ padding: '8px 12px', cursor: 'pointer', borderBottom: '1px solid var(--color-border)', color: 'var(--color-text-main)' }}
@@ -433,10 +433,10 @@ const Reservas = () => {
               />
               {showAcompanhanteCriancaDropdown && (
                 <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)', borderRadius: '8px', maxHeight: '150px', overflowY: 'auto', zIndex: 10, boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' }}>
-                  {hospedes.filter(h => h.id.toString() !== formData.hospedeId && !formData.acompanhantes.includes(h.id) && calcularIdade(h.dataNascimento) <= 10 && (h.nomeCompleto.toLowerCase().includes(acompanhanteCriancaBusca.toLowerCase()) || h.cpf.includes(acompanhanteCriancaBusca))).length === 0 && (
-                     <div style={{ padding: '8px 12px', color: 'var(--color-text-muted)' }}>Nenhuma criança encontrada</div>
+                  {hospedes.filter(h => h.ativo && h.id.toString() !== formData.hospedeId && !formData.acompanhantes.includes(h.id) && calcularIdade(h.dataNascimento) <= 10 && (h.nomeCompleto.toLowerCase().includes(acompanhanteCriancaBusca.toLowerCase()) || h.cpf.includes(acompanhanteCriancaBusca))).length === 0 && (
+                     <div style={{ padding: '8px 12px', color: 'var(--color-text-muted)' }}>Nenhuma criança ativa encontrada</div>
                   )}
-                  {hospedes.filter(h => h.id.toString() !== formData.hospedeId && !formData.acompanhantes.includes(h.id) && calcularIdade(h.dataNascimento) <= 10 && (h.nomeCompleto.toLowerCase().includes(acompanhanteCriancaBusca.toLowerCase()) || h.cpf.includes(acompanhanteCriancaBusca))).map(h => (
+                  {hospedes.filter(h => h.ativo && h.id.toString() !== formData.hospedeId && !formData.acompanhantes.includes(h.id) && calcularIdade(h.dataNascimento) <= 10 && (h.nomeCompleto.toLowerCase().includes(acompanhanteCriancaBusca.toLowerCase()) || h.cpf.includes(acompanhanteCriancaBusca))).map(h => (
                     <div 
                       key={h.id} 
                       style={{ padding: '8px 12px', cursor: 'pointer', borderBottom: '1px solid var(--color-border)', color: 'var(--color-text-main)' }}
